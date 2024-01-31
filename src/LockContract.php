@@ -14,10 +14,9 @@ interface LockContract {
      * Attempt to acquire the lock for the given number of seconds
      * @param $seconds
      * @param callable | null $callback
-     * @param int $gapMs call gap millisecond
      * @return mixed
      */
-    public function block($seconds, $callback = null, $gapMs = 0);
+    public function block($seconds, $callback = null);
 
     /**
      * Release the lock
