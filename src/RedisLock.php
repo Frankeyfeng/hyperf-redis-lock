@@ -14,9 +14,9 @@ class RedisLock extends Lock {
      */
     protected $redis;
 
-    public function __construct($redis, $name, $seconds, $owner = null)
+    public function __construct($redis, $name, $seconds, $minGapMs = 0, $owner = null)
     {
-        parent::__construct($name, $seconds, $owner);
+        parent::__construct($name, $seconds, $minGapMs, $owner);
         $this->redis = $redis;
     }
 

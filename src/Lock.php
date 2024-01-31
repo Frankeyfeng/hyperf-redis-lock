@@ -98,11 +98,10 @@ abstract class Lock implements LockContract
     /**
      * @param $seconds
      * @param callable | null $callback
-     * @param int $gapMs call gap millisecond
      * @return bool|mixed
      * @throws LockTimeoutException
      */
-    public function block($seconds, $callback = null, $gapMs = 0)
+    public function block($seconds, $callback = null)
     {
         $start = microtime(true);
         $starting = $this->currentTime();
