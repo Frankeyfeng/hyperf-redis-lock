@@ -26,7 +26,21 @@ abstract class Lock implements LockContract
      */
     protected $owner;
 
-    public function __construct($name, $seconds, $owner = null)
+    /**
+     * The min gap between each task
+     * @var int
+     */
+    protected $minGapMs;
+
+    /**
+     * lastest task over time name
+     * @var string
+     */
+    protected $endtimeName;
+
+    protected const ENDTIME_NAME_SUFF = ":endtime";
+
+    public function __construct($name, $seconds, $minGapMs = 0, $owner = null)
     {
         if(is_null($owner)) {
             $owner = Str::random();
@@ -34,6 +48,8 @@ abstract class Lock implements LockContract
         $this->name = $name;
         $this->seconds = $seconds;
         $this->owner = $owner;
+        $this->endtimeName = $name.self::ENDTIME_NAME_SUFF;
+        $this->minGapMs = $minGapMs;
     }
 
     /**
@@ -53,6 +69,8 @@ abstract class Lock implements LockContract
      * @return string
      */
     abstract protected function getCurrentOwner();
+
+    abstract public function ensureGap();
 
     /**
      * Attempt to acquire the lock
@@ -100,12 +118,7 @@ abstract class Lock implements LockContract
         if(is_callable($callback)) {
             try {
                 $res = $callback();
-                $end = microtime(true);
-                $leftMs = $gapMs - intval(($end - $start) * 1000);
-                if($gapMs > 0 && $leftMs > 0) {
-                    logger()->info(sprintf(__METHOD__ . ' exec too fast lock:%s need sleep %dms', $this->name, $leftMs));
-                    usleep($leftMs * 1000);
-                }
+                $this->ensureGap();
                 return $res;
             } finally {
                 $this->release();
