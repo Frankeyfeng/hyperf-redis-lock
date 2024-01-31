@@ -34,6 +34,23 @@ class RedisLock extends Lock {
         return intval($result) === 1;
     }
 
+    public function ensureGap() {
+        if ($this->minGapMs <= 0) {
+            return;
+        }
+        $last = (float)$this->redis->get($this->endtimeName);
+        $now = microtime(true);
+        $leftMs = $this->minGapMs - intval($now - $last) * 1000;
+        if($leftMs > 0) {
+            logger()->info(sprintf(__METHOD__ . ' exec too fast lock:%s need sleep %dms', $this->name, $leftMs));
+            usleep($leftMs *1000);
+        }
+
+        $expire = $this->seconds * 2 + 1;
+        $endtime = microtime(true);
+        $this->redis->setex($this->endtimeName, $expire, $endtime);
+    }
+
     /**
      * @inheritDoc
      */

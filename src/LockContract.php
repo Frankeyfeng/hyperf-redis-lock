@@ -36,4 +36,9 @@ interface LockContract {
      * @return mixed
      */
     public function forceRelease();
+
+    /**
+     * Ensure min gap between each task
+     */
+    public function ensureGap();
 }
