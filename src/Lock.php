@@ -40,6 +40,12 @@ abstract class Lock implements LockContract
 
     protected const ENDTIME_NAME_SUFF = ":endtime";
 
+    /**
+     * task start time
+     * @var float
+     */
+    protected $starttime;
+
     public function __construct($name, $seconds, $minGapMs = 0, $owner = null)
     {
         if(is_null($owner)) {
@@ -103,7 +109,7 @@ abstract class Lock implements LockContract
      */
     public function block($seconds, $callback = null)
     {
-        $start = microtime(true);
+        $this->starttime = microtime(true);
         $starting = $this->currentTime();
         while (!$this->acquire()) {
             $sleepMs = 250;

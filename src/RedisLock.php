@@ -39,6 +39,9 @@ class RedisLock extends Lock {
             return;
         }
         $last = (float)$this->redis->get($this->endtimeName);
+        if ($last == 0) {
+            $last = $this->starttime;
+        }
         $now = microtime(true);
         $leftMs = $this->minGapMs - intval($now - $last) * 1000;
         if($leftMs > 0) {
