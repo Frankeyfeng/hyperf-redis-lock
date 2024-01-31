@@ -113,7 +113,7 @@ abstract class Lock implements LockContract
         $starting = $this->currentTime();
         while (!$this->acquire()) {
             $sleepMs = 250;
-            logger()->info(sprintf(__METHOD__ . ' not get lock:%s sleep %dms', $this->name, $sleepMs));
+            // logger()->info(sprintf(__METHOD__ . ' not get lock:%s sleep %dms', $this->name, $sleepMs));
             usleep($sleepMs * 1000);
             if ($this->currentTime() - $seconds >= $starting) {
                 throw new LockTimeoutException();
